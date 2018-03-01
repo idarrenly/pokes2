@@ -1,0 +1,96 @@
+ <!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>Pokes</title>
+        <meta name="description" content="Poking with friends">
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css">
+        <!-- jQuery first, then Popper.js, then Bootstrap JS from CDN -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
+    </head>
+    <body>
+        <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
+            <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">Pokes</a>
+            <ul class="navbar-nav px-3">
+                <li class="nav-item text-nowrap">
+                    <a class="nav-link" href="/logout">Sign out</a>
+                </li>
+            </ul>
+        </nav>
+        <div class="container-fluid">
+            <div class="row">
+                <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+                        <h1 class="h2">Welcome, <span class="text-danger">{{request.session.user_name}}</span>!</h1>
+                    </div>
+                    {% if pokes.count == 0 %}
+                        <h5>No one poked you!</h5>
+                    {% elif pokes.count > 1  %}
+                        <h5>{{pokes.count}} people poked you!</h5>
+                    {% else %}
+                        <h5>{{pokes.count}} person poked you!</h5>
+                    {% endif %}
+                    <div class="table-responsive">
+                        <table class="table table-striped table-sm">
+                            <tbody>
+                                {% for user in pokes %}
+                                    <tr>
+                                        {% if user.pokeCount > 1 %}
+                                            <td>{{user.poker.firstName}} poked you {{user.pokeCount}} times.</td>
+                                        {% else %}
+                                            <td>{{user.poker.firstName}} poked you {{user.pokeCount}} time.</td>
+                                        {% endif %}
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <h5 class="mt-5">People you may want to poke</h5>
+                    {% if people|length %}
+                        <div class="table-responsive">
+                            <table class="table table-striped table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Alias</th>
+                                        <th>Email Address</th>
+                                        <th>Poke History</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for user in people %}
+                                        <tr>
+                                            <td>{{user.0.firstName}} {{user.0.lastName}}</td>
+                                            <td>{{user.0.username}}</td>
+                                            <td>{{user.0.email}}</td>
+                                            <td>
+                                                {% if user.1 > 1 %}
+                                                    {{user.1}} pokes</td>
+                                                {% else %}
+                                                    {{user.1}} poke</td>
+                                                {% endif %}
+                                            <td>
+                                                <form action="/pokes/{{user.0.id}}" method="POST">
+                                                    {% csrf_token %}
+                                                    <input id="button" class="btn btn-outline-primary btn-sm" type="submit" value="Poke!">
+                                                </form>   
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p>No additional registered people to poke at the moment.</p>
+                    {% endif %}
+                </main>
+            </div>
+        </div>
+    </body>
+</html>
